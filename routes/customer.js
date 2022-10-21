@@ -14,6 +14,17 @@ module.exports = server => {
      }
     });
 
+    //geting a single customer
+    server.get('/customers/:id',async(req,res,next)=>{
+        try{
+            const customer = await customer.findById(req.params.id);
+            res.send(customer);
+            next();
+        }catch(err){
+            return next(new errors.ResourceNotFoundError(`There is no customer with the id of ${req.params.id}`));
+        }
+    })
+
     // adding customers to the database
     server.post('/customers',async (req, res, next)=>{
 
@@ -38,5 +49,40 @@ module.exports = server => {
 return next(new errors.InternalError(err.message));
         }
     });
-};
 
+//Update Customer
+server.put('/customers/:id', async (req, res,next)=>{
+    //check for JSON 
+    if(!req.is('application/json')){
+        return next(new errors.InvalidContentError("Expects 'application/json'"));
+    }
+
+  try{
+    const customer =await customer.findOneAndUpdate({_id: req.params.id},req.body);
+    res.send(200);
+    next();
+  } catch (err){
+    return next (new errors.InternalError(
+        `There is no customer with the id of ${req.params.id}`
+    ));
+  }
+
+});
+
+//Delete Customer
+
+server.del('/customers/:id',async(req,res,next)=>{
+    try{
+        const customer = await customer.findOneAndRemove({_id: req.params.id});
+        res.send(204);
+        next();
+    } catch(err){
+        return next(
+            new errors.ResourceNotFoundError(
+                `There is no customer with the of ${req.params.id}`
+            )
+        );
+    }
+});
+
+};

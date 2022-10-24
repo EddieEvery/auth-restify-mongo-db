@@ -5,5 +5,3 @@ module.exports ={
     MONGODB_URI: process.env.MONGODB_URL || ''
 }
 
-// study about the env.variables
-//m lab
